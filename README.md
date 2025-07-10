@@ -26,6 +26,9 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Install pre-commit hooks (optional)
+pre-commit install
 ```
 
 ### Running the API
@@ -125,6 +128,7 @@ Returns system health metrics including uptime, request count, and average respo
 5. **Async Everything**: Non-blocking I/O for better performance
 6. **Queue-based Logging**: Ensures logging doesn't block request handling
 7. **Graceful Shutdown**: Properly handles SIGTERM/SIGINT signals
+8. **Code Quality**: Black formatting, pre-commit hooks, and linting integrated
 
 ## Project Structure
 

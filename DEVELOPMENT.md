@@ -55,6 +55,7 @@ The initial implementation used NDJSON streaming with a separate `/generate/stre
 - **Rate Limiting**: Simple in-memory implementation perfect for local use
 - **SSE Streaming**: Standards-compliant streaming with proper headers and `[DONE]` events
 - **Usage Tracking**: Token counting for prompt and completion (simple word-based approximation)
+- **Code Quality**: Automated formatting and linting with pre-commit hooks
 
 ### Development Philosophy
 
@@ -62,6 +63,7 @@ Rather than over-engineering, we focused on:
 - Clean, readable code that speaks for itself
 - Thoughtful features that show depth
 - Professional patterns scaled appropriately
+- Automated code quality with minimal overhead
 
 ### Final API Design
 
@@ -71,6 +73,17 @@ The refined API now features:
 - **Response format**: Includes usage tracking, clean interface without timing clutter
 - **SSE format**: Proper `data:` prefixed events with `[DONE]` completion
 - **Accurate logging**: Processing time (server-side) logged separately from user response time
+- **Development workflow**: Pre-commit hooks ensure consistent code quality
+
+### Code Quality Setup
+
+The project includes automated code quality tools:
+- **Black**: Consistent code formatting (88 character line length)
+- **isort**: Import sorting compatible with Black
+- **flake8**: Linting with relaxed rules for Black compatibility
+- **pre-commit**: Automatic execution before each commit
+
+This ensures all code maintains professional standards without manual intervention.
 
 ### Future Enhancements Considered
 
