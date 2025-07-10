@@ -85,6 +85,24 @@ The project includes automated code quality tools:
 
 This ensures all code maintains professional standards without manual intervention.
 
+### Testing Strategy
+
+Comprehensive test coverage with pytest:
+- **Model Tests**: Validate Pydantic models, edge cases, and serialization
+- **Logger Tests**: Async queue handling, file operations, JSON formatting
+- **API Tests**: Endpoint behavior, streaming SSE, rate limiting, error handling
+- **Fixtures**: Shared test utilities, mock time for consistent results
+- **Isolation**: Temporary files for logger tests, mocked dependencies
+
+### Development Environment
+
+**direnv Integration**: Automatic environment activation
+- `.envrc` file creates and activates virtual environment automatically
+- Dependencies installed/updated when requirements.txt changes
+- No manual activation needed - just `cd` into the directory
+
+This streamlines development workflow and ensures consistent environments across developers.
+
 ### Future Enhancements Considered
 
 - Integration with local LLMs (Ollama/Hugging Face)

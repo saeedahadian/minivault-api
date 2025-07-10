@@ -4,7 +4,7 @@ import json
 import time
 import asyncio
 import signal
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 from collections import deque
 from contextlib import asynccontextmanager
@@ -19,7 +19,7 @@ from logger import AsyncLogger
 
 # Global state
 logger = AsyncLogger()
-start_time = datetime.utcnow()
+start_time = datetime.now(timezone.utc)
 request_count = 0
 rate_limit_store: Dict[str, deque] = {}
 
@@ -173,7 +173,7 @@ async def generate(request: GenerateRequest, req: Request):
 @app.get("/health", response_model=HealthStatus, include_in_schema=False)
 async def health():
     """Hidden health check endpoint with system stats."""
-    uptime = (datetime.utcnow() - start_time).total_seconds()
+    uptime = (datetime.now(timezone.utc) - start_time).total_seconds()
 
     return HealthStatus(uptime_seconds=uptime, total_requests=request_count)
 

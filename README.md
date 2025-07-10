@@ -20,11 +20,15 @@ A lightweight, local REST API that simulates prompt/response generation with tho
 # Clone the repository
 cd minivault-api
 
-# Create virtual environment (recommended)
+# Option 1: Automatic environment setup with direnv (recommended)
+# Install direnv if not already installed
+brew install direnv  # On macOS
+# Add direnv hook to your shell config (see https://direnv.net/docs/hook.html)
+direnv allow  # This will auto-create venv and install dependencies
+
+# Option 2: Manual setup
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
 
 # Install pre-commit hooks (optional)
@@ -130,6 +134,21 @@ Returns system health metrics including uptime, request count, and average respo
 7. **Graceful Shutdown**: Properly handles SIGTERM/SIGINT signals
 8. **Code Quality**: Black formatting, pre-commit hooks, and linting integrated
 
+## Testing
+
+Run the test suite with pytest:
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run specific test file
+pytest tests/test_api.py -v
+
+# Run with coverage
+pytest tests/ --cov=. --cov-report=html
+```
+
 ## Project Structure
 
 ```
@@ -139,6 +158,13 @@ minivault-api/
 ├── logger.py           # Async JSONL logger implementation
 ├── cli.py              # Rich CLI tool for testing
 ├── requirements.txt    # Python dependencies
+├── .envrc              # direnv configuration for auto-environment setup
+├── .pre-commit-config.yaml # Code quality automation
+├── tests/              # Comprehensive test suite
+│   ├── conftest.py     # Shared test fixtures
+│   ├── test_api.py     # API endpoint tests
+│   ├── test_models.py  # Model validation tests
+│   └── test_logger.py  # Logger tests
 ├── logs/              # Directory for JSONL logs
 │   └── log.jsonl      # Append-only log file
 ├── DEVELOPMENT.md     # Development insights and AI collaboration notes

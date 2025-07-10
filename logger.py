@@ -2,7 +2,7 @@
 
 import json
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 import aiofiles
@@ -49,7 +49,7 @@ class AsyncLogger:
     ):
         """Log an API interaction with server-side processing time."""
         entry = LogEntry(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             prompt=prompt,
             response=response,
             usage=usage,

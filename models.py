@@ -1,8 +1,8 @@
 """Pydantic models for MiniVault API."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class GenerateRequest(BaseModel):
@@ -15,11 +15,11 @@ class GenerateRequest(BaseModel):
 class Usage(BaseModel):
     """Token usage tracking model."""
 
-    prompt_tokens: int = Field(..., description="Number of tokens in the prompt")
+    prompt_tokens: int = Field(..., ge=0, description="Number of tokens in the prompt")
     completion_tokens: int = Field(
-        ..., description="Number of tokens in the completion"
+        ..., ge=0, description="Number of tokens in the completion"
     )
-    total_tokens: int = Field(..., description="Total tokens used")
+    total_tokens: int = Field(..., ge=0, description="Total tokens used")
 
 
 class GenerateResponse(BaseModel):
@@ -27,7 +27,7 @@ class GenerateResponse(BaseModel):
 
     response: str = Field(..., description="Generated response text")
     usage: Usage = Field(..., description="Token usage information")
-    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class StreamToken(BaseModel):
@@ -35,7 +35,8 @@ class StreamToken(BaseModel):
 
     token: str
     index: int
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    usage: Optional[Usage] = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class HealthStatus(BaseModel):
