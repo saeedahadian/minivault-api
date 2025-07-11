@@ -285,6 +285,10 @@ minivault-api/
 - Model performance benchmarking
 - Support for more LLM providers (LLaMA.cpp, Hugging Face)
 
+## Development Story
+
+Curious about how this API was built through human-AI collaboration? Check out our [development journey and design insights](DEVELOPMENT.md) to see the collaborative process behind MiniVault API.
+
 ## Notes
 
 This API includes several easter eggs and thoughtful touches. Try sending "What model are you?" as a prompt! 🎉
