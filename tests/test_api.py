@@ -129,7 +129,7 @@ class TestHealthEndpoint:
         data = response.json()
 
         assert data["status"] == "healthy"
-        assert data["version"] == "2.0.0"
+        assert data["version"] == "2.0.1"
         assert "uptime_seconds" in data
         assert "total_requests" in data
         assert isinstance(data["uptime_seconds"], float)

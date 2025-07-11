@@ -82,7 +82,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="MiniVault API",
     description="A lightweight local REST API for prompt/response generation with LLM integration",
-    version="2.0.0",
+    version="2.0.1",
     lifespan=lifespan,
     docs_url=None,  # Hide docs for a cleaner API
     redoc_url=None,
@@ -119,8 +119,11 @@ async def get_response(
     max_tokens: Optional[int] = None,
     system: Optional[str] = None,
     stream: bool = False
-) -> str:
-    """Get response for a given prompt using LLM or fallback."""
+) -> tuple[str, str, bool]:
+    """Get response for a given prompt using LLM or fallback.
+    
+    Returns: (response_text, provider, fallback_used)
+    """
     global llm_client
     
     # Try LLM first
@@ -135,22 +138,22 @@ async def get_response(
                 system=system,
                 stream=stream
             )
-            return response
+            return response, "ollama", False
         except LLMError as e:
             print(f"LLM error: {e}")
             # Fall through to fallback
     
     # Fallback to stub responses
     if prompt.lower() in FALLBACK_RESPONSES:
-        return FALLBACK_RESPONSES[prompt.lower()]
-
-    # Generate a "smart" fallback response based on prompt length
-    if len(prompt) < 10:
-        return "Your prompt is quite short. Try asking something more detailed! (Fallback mode)"
+        response = FALLBACK_RESPONSES[prompt.lower()]
+    elif len(prompt) < 10:
+        response = "Your prompt is quite short. Try asking something more detailed! (Fallback mode)"
     elif len(prompt) > 100:
-        return "That's a thoughtful prompt! Here's my comprehensive response to your detailed query. (Fallback mode)"
+        response = "That's a thoughtful prompt! Here's my comprehensive response to your detailed query. (Fallback mode)"
     else:
-        return FALLBACK_RESPONSES["default"]
+        response = FALLBACK_RESPONSES["default"]
+    
+    return response, "stub", True
 
 
 def create_usage(prompt: str, response: str) -> Usage:
@@ -197,7 +200,7 @@ async def generate(request: GenerateRequest, req: Request):
             max_tokens = preset_config["max_tokens"]
     
     # Generate response
-    response_text = await get_response(
+    response_text, llm_provider, fallback_used = await get_response(
         prompt=request.prompt,
         model=request.model,
         temperature=temperature,
@@ -219,6 +222,14 @@ async def generate(request: GenerateRequest, req: Request):
         processing_time_ms=processing_time_ms,
         ip_address=client_ip,
         stream=request.stream,
+        preset_used=request.preset.value if request.preset else None,
+        model_name=request.model,
+        temperature_used=temperature,
+        top_p_used=top_p,
+        max_tokens_used=max_tokens,
+        system_prompt=request.system,
+        llm_provider=llm_provider,
+        fallback_used=fallback_used,
     )
 
     if request.stream:
@@ -240,7 +251,6 @@ async def generate(request: GenerateRequest, req: Request):
                         event_data = {
                             "token": token,
                             "index": token_count,
-                            "usage": None,
                         }
                         yield f"data: {json.dumps(event_data)}\n\n"
                         token_count += 1
@@ -260,11 +270,19 @@ async def generate(request: GenerateRequest, req: Request):
                     for i, token in enumerate(tokens):
                         if i > 0:
                             token = " " + token
-                        event_data = {
-                            "token": token,
-                            "index": i,
-                            "usage": usage.model_dump() if i == len(tokens) - 1 else None,
-                        }
+                        if i == len(tokens) - 1:
+                            # Final token includes usage
+                            event_data = {
+                                "token": token,
+                                "index": i,
+                                "usage": usage.model_dump(),
+                            }
+                        else:
+                            # Intermediate tokens don't include usage
+                            event_data = {
+                                "token": token,
+                                "index": i,
+                            }
                         yield f"data: {json.dumps(event_data)}\n\n"
                         await asyncio.sleep(0.05)  # 50ms delay between tokens
             else:
@@ -273,11 +291,19 @@ async def generate(request: GenerateRequest, req: Request):
                 for i, token in enumerate(tokens):
                     if i > 0:
                         token = " " + token
-                    event_data = {
-                        "token": token,
-                        "index": i,
-                        "usage": usage.model_dump() if i == len(tokens) - 1 else None,
-                    }
+                    if i == len(tokens) - 1:
+                        # Final token includes usage
+                        event_data = {
+                            "token": token,
+                            "index": i,
+                            "usage": usage.model_dump(),
+                        }
+                    else:
+                        # Intermediate tokens don't include usage
+                        event_data = {
+                            "token": token,
+                            "index": i,
+                        }
                     yield f"data: {json.dumps(event_data)}\n\n"
                     await asyncio.sleep(0.05)  # 50ms delay between tokens
 

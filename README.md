@@ -256,7 +256,12 @@ minivault-api/
 
 ## Version History
 
-### v2.0.0 (Current) 
+### v2.0.1 (Current)
+- ✅ Enhanced logging with comprehensive request analytics
+- ✅ Optimized streaming API (removed unnecessary null fields)
+- ✅ Improved bandwidth efficiency
+
+### v2.0.0
 - ✅ User-friendly presets for common use cases
 - ✅ Preset discovery endpoint  
 - ✅ Preset override capability

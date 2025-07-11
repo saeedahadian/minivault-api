@@ -46,8 +46,17 @@ class AsyncLogger:
         processing_time_ms: float,
         ip_address: Optional[str] = None,
         stream: bool = False,
+        # Enhanced logging parameters
+        preset_used: Optional[str] = None,
+        model_name: Optional[str] = None,
+        temperature_used: Optional[float] = None,
+        top_p_used: Optional[float] = None,
+        max_tokens_used: Optional[int] = None,
+        system_prompt: Optional[str] = None,
+        llm_provider: str = "stub",
+        fallback_used: bool = False,
     ):
-        """Log an API interaction with server-side processing time."""
+        """Log an API interaction with comprehensive request details."""
         entry = LogEntry(
             timestamp=datetime.now(timezone.utc),
             prompt=prompt,
@@ -56,5 +65,13 @@ class AsyncLogger:
             processing_time_ms=processing_time_ms,
             ip_address=ip_address,
             stream=stream,
+            preset_used=preset_used,
+            model_name=model_name,
+            temperature_used=temperature_used,
+            top_p_used=top_p_used,
+            max_tokens_used=max_tokens_used,
+            system_prompt=system_prompt,
+            llm_provider=llm_provider,
+            fallback_used=fallback_used,
         )
         await self._queue.put(entry.model_dump())

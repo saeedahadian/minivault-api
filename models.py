@@ -61,7 +61,7 @@ class HealthStatus(BaseModel):
     status: str = "healthy"
     uptime_seconds: float
     total_requests: int
-    version: str = "2.0.0"
+    version: str = "2.0.1"
     llm_status: Optional[dict] = None
 
 
@@ -81,6 +81,8 @@ class ModelsResponse(BaseModel):
 
 class LogEntry(BaseModel):
     """Model for JSONL log entries."""
+    
+    model_config = {"protected_namespaces": ()}
 
     timestamp: datetime
     prompt: str
@@ -89,6 +91,16 @@ class LogEntry(BaseModel):
     processing_time_ms: float
     ip_address: Optional[str] = None
     stream: bool = False
+    
+    # Enhanced logging for v2.0 features
+    preset_used: Optional[PresetType] = None
+    model_name: Optional[str] = None
+    temperature_used: Optional[float] = None
+    top_p_used: Optional[float] = None
+    max_tokens_used: Optional[int] = None
+    system_prompt: Optional[str] = None
+    llm_provider: str = "stub"
+    fallback_used: bool = False
 
 
 class PresetInfo(BaseModel):
