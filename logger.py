@@ -1,11 +1,13 @@
 """Async JSONL logger for MiniVault API."""
 
-import json
 import asyncio
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
 import aiofiles
+
 from models import LogEntry, Usage
 
 

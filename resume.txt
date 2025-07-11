@@ -1,0 +1,55 @@
+﻿SAEED AHADIAN
+Email: saeed.ahadian96@gmail.com
+Phone: +98 912 48 56 196 (WhatsApp/Telegram Available)
+Location: Tehran, Iran
+LinkedIn: linkedin.com/in/saeedahadian
+
+
+PROFESSIONAL SUMMARY
+Software engineer with 5+ years delivering high-impact solutions for millions of users. Proven ability to rescue critical systems, lead architectural migrations, and drive significant performance improvements. Passionate about engineering roles where technical depth creates measurable business value.
+
+
+TECHNICAL SKILLS
+Languages: PHP, Python, JavaScript, SQL, Bash
+Backend & Architecture: Symfony, Laravel, Django, Flask, Node.js, RESTful APIs, Microservices, Event-Driven Systems (Push/Pull), Clean Architecture
+Infrastructure & Cloud: OpenStack, Docker, Kubernetes, Infrastructure as Code, Distributed Systems (350M daily events)
+Monitoring & Observability: ELK Stack (Elasticsearch, Logstash, Kibana, Beats), Prometheus, Grafana, Custom Alerting Systems, Log Aggregation
+Databases: MySQL, MongoDB, Redis, Memcached
+DevOps & SRE: CI/CD (Jenkins, GitLab CI), Configuration Management, Production Debugging, Performance Optimization, High Availability
+Tools & Practices: Git, Linux System Administration, Agile/Scrum, A/B Testing Infrastructure, Incident Response
+
+
+PROFESSIONAL EXPERIENCE
+Software Engineer | Digikala (E-commerce platform, 10K+ employees) | Tehran, Iran | 2022 - Present
+* Led solo backend development of merchant portal serving 500K+ sellers (60% GMV), transforming legacy Symfony monolith to React/API architecture while supporting 12 frontend engineers; drove 6.8x increase in registration conversion (5% → 34%) and 73% reduction in onboarding time
+* Architected asynchronous event-driven Buy Box algorithm processing 350M daily updates across 60M+ products, determining winners for 80% of platform orders; expanded ranking factors from 3 to 10+ metrics and built A/B testing infrastructure currently live on 15% of traffic
+* Prevented authentication system catastrophe by discovering 160K duplicate phone numbers during migration testing; orchestrated cross-functional war room with Product, Design, and Business teams to architect dual-authentication solution, delivering "most uneventful launch in company history" against C-suite expectations of disaster
+* Rescued collapsing pricing system after entire team exodus, debugging critical one-rial (Iranian currency) discrepancies in gold/jewelry transactions; implemented BC Math precision library and single-source-of-truth architecture across 3 teams, eliminating financial calculation errors within 1 month (zero recurrence to date)
+* Thrived in high-pressure environments: managed 12:1 frontend-to-backend ratio during critical portal rewrite, volunteered for pricing team in crisis after developer exodus; mentored junior developer to senior level while delivering on aggressive timelines
+Site Reliability Engineer | Snapp (Ride-hailing platform, 50M+ Users) | Tehran, Iran | 2022
+* Operated and monitored 200+ microservice architecture (Go/PHP) handling 2M+ daily rides, maintaining 99.9% uptime SLA
+* Ensured system reliability during peak events, including record-breaking 2M+ rides on Valentine's Day
+* Utilized OpenStack infrastructure, Prometheus, Grafana, and Ansible for infrastructure monitoring and configuration management
+* Participated in on-call rotations for critical ride-hailing services
+DevOps Engineer | Mofid Brokerage (Iran’s leading brokerage, 1K+ employees) | Tehran, Iran | 2021-2022
+* Established foundational DevOps infrastructure as first DevOps hire for Mofid's AI team, building observability and deployment systems from ground zero to support machine learning operations in financial trading environment
+* Implemented comprehensive observability infrastructure using Elastic Stack (Elasticsearch, Logstash, Kibana), Prometheus, and Grafana, providing real-time monitoring and alerting for AI services handling trading algorithms and risk models
+* Dockerized entire AI service portfolio and deployed on-premises Docker registry, eliminating external rate limit constraints and ensuring reliable container deployment in regulated financial environment
+* Collaborated directly with AI engineering team to establish DevOps best practices, bridging gap between ML development and production operations for Iran's leading brokerage platform
+Backend Developer | Finnotech (Open Banking provider) | Tehran, Iran | 2020-2021
+* Secured position through 2-week trial despite junior status, quickly becoming key contributor during company's critical financial period with competitors gaining ground
+* Diagnosed performance bottlenecks in legacy Boom Core (custom TypeScript framework) monolith, proposed and championed migration to NestJS, which was adopted as company's new standard
+* Collaborated on architectural redesign while maintaining stability for existing clients, balancing modernization needs with zero-downtime requirements for one of Iran's major Open Banking providers
+
+
+EDUCATION
+University of Tehran - Computer Engineering Master's Program | Tehran, Iran | 2022
+* Accepted with ranking of 149/11,000+ (top 1.4%) in national entrance exam
+* Declined enrollment to pursue industry opportunities
+Backend Development Bootcamp - Node.js | Maktab Sharif | Tehran, Iran | 2020
+* Intensive 350-hour program focused on backend development, RESTful API design, and modern web technologies
+Bachelor of Science in Chemical Engineering | Ferdowsi University of Mashhad | Mashhad, Iran | 2014-2019
+
+
+LANGUAGES & CERTIFICATIONS
+Languages: English (Fluent - Duolingo 145/160), Persian (Native)

@@ -28,6 +28,10 @@ uvicorn app:app --reload         # Development with auto-reload
 # With environment variables
 LLM_MODEL=llama3.1:8b python app.py
 LLM_PROVIDER=stub python app.py  # Use stub responses (no LLM required)
+LLM_MODEL=auto python app.py     # Use dynamic model selection (random from available)
+
+# Resume feature for personal questions
+echo "Resume content here..." > resume.txt
 ```
 
 ### Local LLM Setup (Ollama)
@@ -57,10 +61,13 @@ pytest tests/ --cov=. --cov-report=html  # With coverage
 ### CLI Tool
 ```bash
 chmod +x cli.py
-./cli.py generate -p "Your prompt"    # Generate response
-./cli.py stream -p "Tell me a story"  # Stream response
-./cli.py health                       # Check health
-./cli.py benchmark -c 100             # Run benchmark
+./cli.py generate -p "Your prompt" --preset creative    # Generate with preset
+./cli.py stream -p "Tell me a story" --system "You are helpful"  # Stream with system prompt
+./cli.py health                       # Check health and LLM status
+./cli.py presets                      # List available presets
+./cli.py models                       # List available models
+./cli.py benchmark -c 100 --preset balanced  # Benchmark with preset
+./cli.py compare-presets -p "Explain AI"     # Compare all presets
 ```
 
 ### Code Quality
@@ -142,12 +149,15 @@ pre-commit run --all-files      # Run all hooks
 # LLM Settings
 LLM_PROVIDER=ollama          # ollama, openai, stub
 LLM_BASE_URL=http://localhost:11434
-LLM_MODEL=llama3.1:8b
+LLM_MODEL=llama3.1:8b        # Specific model or "auto" for random selection
 LLM_TEMPERATURE=0.7
 LLM_TOP_P=0.9
 LLM_MAX_TOKENS=1000
 LLM_TIMEOUT=30.0
 LLM_SYSTEM_PROMPT="You are a helpful assistant"
+LLM_RESUME_FILE=resume.txt        # Resume file for personal questions
+LLM_RESUME_CONTENT="..."          # Or direct resume content
+LLM_INCLUDE_THINKING=false        # Include model's thinking process in responses
 
 # API Settings
 API_HOST=0.0.0.0
@@ -158,7 +168,8 @@ API_RATE_LIMIT_WINDOW=60
 ```
 
 ### Easter Eggs & Features
-- Try prompt: "What model are you?" for a meta-response
+- Try prompt: "Who are you?" for a personal response
+- Smart resume context for personal questions (auto-detects and enhances responses)
 - Hidden endpoints for model management
 - AI collaboration acknowledgment in startup message
 - Real token counting from LLM responses

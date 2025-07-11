@@ -18,7 +18,7 @@ This project was developed through AI pair programming with Claude (Sonnet 4), d
    - Comprehensive error handling
 
 3. **Easter Eggs & Thoughtful Details**
-   - Meta-prompt handling: Ask "What model are you?" for a surprise
+   - Personal easter egg: Ask "Who are you?" for a personal introduction
    - Hidden `/health` endpoint with system metrics
    - AI collaboration acknowledgment in startup message
 
@@ -221,6 +221,78 @@ Further refinement based on efficiency concerns:
 - Better adherence to JSON best practices
 - Improved user experience with less data noise
 
+### Post v2.0.1 Enhancements
+
+The collaboration continued with several user-driven improvements:
+
+#### CLI Tool Modernization
+
+**Human Observation**: "It seems like the CLI tool has been outdated and is not working at all. Let's fix and update that."
+
+**Technical Updates**:
+- Added full v2.0 parameter support to all commands
+- Created `presets` command to list available configurations
+- Created `models` command to list available LLMs
+- Enhanced benchmark with preset/model testing capabilities
+- Added `compare-presets` for side-by-side response comparisons
+
+#### Dynamic Model Selection
+
+**Human Insight**: "Instead of hardcoding a model, if no model was given, pick one at random from the list of available models"
+
+**Technical Implementation**:
+- Replaced hardcoded default with dynamic selection
+- Added 60-second model list caching
+- Support for `LLM_MODEL=auto` or empty configuration
+- Graceful fallback to stub responses when no models available
+
+**Benefits**:
+- Zero configuration required for basic usage
+- Better utilization of available models
+- Reduced setup complexity for new users
+
+#### Personal Easter Egg Enhancement
+
+**Human Touch**: "I want to respond with my own words when it asks 'Who are you?'"
+
+**Implementation**:
+- Changed trigger from "What model are you?" to "Who are you?"
+- Added personal introduction featuring:
+  - Professional role at Digikala
+  - Minimalist philosophy: "the things you own end up owning you"
+  - Absurdist worldview and meaning
+  - Welcoming invitation to help
+
+#### Smart Resume Context Feature
+
+**Human Vision**: "What if I provide the model with my resume as context and allow them to ask about me through the API?"
+
+**Technical Innovation**:
+- Smart personal question detection with keywords
+- Automatic resume context injection for relevant queries
+- Multiple configuration options (file, env var, custom path)
+- Works in both LLM and fallback modes
+
+**Usage Examples**:
+- "Tell me about your experience at Digikala" → Resume context applied
+- "What technologies do you work with?" → Resume context applied
+- "Explain quantum computing" → Normal response without resume
+
+#### Response Cleaning: Think Tag Filtering
+
+**Human Observation**: "In the response provided by Ollama, there is a part related to its thinking process which is wrapped inside <think> tags. Should we include these in the API response?"
+
+**Technical Solution**:
+- Added `clean_response()` function with regex filtering
+- Removes `<think>...</think>` blocks while preserving content
+- Works for both streaming and non-streaming responses
+- Configurable via `LLM_INCLUDE_THINKING` environment variable
+
+**Impact**:
+- Clean, professional API responses by default
+- Optional debugging mode for development
+- Maintains response quality for end users
+
 ### Human Contributions Highlight
 
 Throughout this project, the human partner provided critical insights:
@@ -232,6 +304,8 @@ Throughout this project, the human partner provided critical insights:
 - **Data-Driven Mindset**: Recognizing gaps in analytics and logging
 - **Efficiency Mindset**: Spotting unnecessary data in API responses
 - **Quality Focus**: Insistence on updated documentation
+- **Personal Touch**: Making the API uniquely personal and interactive
+- **Innovation**: Creative features like resume context and dynamic model selection
 
 These contributions shaped a more professional, standards-compliant API that balances functionality with simplicity while remaining accessible to users of all technical levels.
 
@@ -242,12 +316,21 @@ These contributions shaped a more professional, standards-compliant API that bal
 - ~~User-friendly preset system~~ ✓ Implemented in v2.0.0
 - ~~Comprehensive analytics logging~~ ✓ Implemented in v2.0.0
 - ~~Streaming API optimization~~ ✓ Implemented in v2.0.1
+- ~~CLI tool modernization~~ ✓ Implemented post v2.0.1
+- ~~Dynamic model selection~~ ✓ Implemented post v2.0.1
+- ~~Personal branding features~~ ✓ Implemented post v2.0.1
+- ~~Smart context injection~~ ✓ Implemented post v2.0.1
+- ~~Response cleaning/filtering~~ ✓ Implemented post v2.0.1
 - Metrics export (Prometheus format)
 - Request ID tracking for debugging
 - OpenAI API compatibility mode
 - Model performance benchmarking
 - Custom preset creation via API
 - Real-time analytics dashboard
+- Multi-language support
+- API key authentication
+- Rate limiting per API key
+- WebSocket support for real-time streaming
 
 ---
 

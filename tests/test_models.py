@@ -1,8 +1,10 @@
-import pytest
-from pydantic import ValidationError
 from datetime import datetime
 
-from models import GenerateRequest, GenerateResponse, Usage, LogEntry, StreamToken
+import pytest
+from pydantic import ValidationError
+
+from models import (GenerateRequest, GenerateResponse, LogEntry, StreamToken,
+                    Usage)
 
 
 class TestGenerateRequest:

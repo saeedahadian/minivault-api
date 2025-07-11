@@ -1,9 +1,10 @@
-import pytest
 import json
 import time
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
+
 from app import app
 
 
@@ -38,13 +39,13 @@ class TestGenerateEndpoint:
         assert response.status_code == 422
 
     def test_generate_meta_prompt_easter_egg(self, client, mock_time):
-        """Test meta prompt easter egg."""
-        response = client.post("/generate", json={"prompt": "What model are you?"})
+        """Test personal easter egg."""
+        response = client.post("/generate", json={"prompt": "Who are you?"})
 
         assert response.status_code == 200
         data = response.json()
-        assert "MiniVault" in data["response"]
-        assert "Claude" in data["response"]
+        assert "Saeed Ahadian" in data["response"]
+        assert "Digikala" in data["response"]
 
     def test_generate_with_stream_false(self, client, mock_time):
         """Test generate with explicit stream=false."""

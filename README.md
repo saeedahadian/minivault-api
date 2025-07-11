@@ -14,6 +14,8 @@ A lightweight, local REST API with real AI capabilities through Ollama integrati
 - 🎯 CLI testing tool with benchmarking
 - ⚙️ Full configuration via environment variables
 - 🔄 Per-request model selection with preset support
+- 🎲 Dynamic model selection (automatic random model choice)
+- 👤 Smart resume context for personal questions
 
 ## Quick Start
 
@@ -64,6 +66,11 @@ LLM_PROVIDER=stub python app.py
 # Use a specific model
 LLM_MODEL=mistral:7b python app.py
 
+# Use dynamic model selection (picks random available model)
+LLM_MODEL=auto python app.py
+# OR
+python app.py  # (no LLM_MODEL specified)
+
 # Or with auto-reload for development
 uvicorn app:app --reload
 ```
@@ -107,24 +114,46 @@ curl http://localhost:8000/presets
 
 ## CLI Tool
 
-The included CLI tool makes testing easier:
+The included CLI tool makes testing easier with full v2.0 feature support:
 
 ```bash
 # Make it executable
 chmod +x cli.py
 
-# Generate response
-./cli.py generate -p "Your prompt here"
+# Generate response with preset
+./cli.py generate -p "Your prompt here" --preset creative
 
-# Stream response
-./cli.py stream -p "Tell me about AI"
+# Generate with specific model and parameters
+./cli.py generate -p "Write code" --preset code --temperature 0.1
+
+# Stream response with system prompt
+./cli.py stream -p "Tell me about AI" --system "You are an expert"
+
+# List available presets
+./cli.py presets
+
+# List available models
+./cli.py models
 
 # Check health status
 ./cli.py health
 
-# Run benchmark
-./cli.py benchmark -c 100
+# Run benchmark with preset testing
+./cli.py benchmark -c 50 --preset balanced
+
+# Compare all presets with the same prompt
+./cli.py compare-presets -p "Explain quantum computing"
 ```
+
+### CLI Commands
+
+- **generate**: Send a prompt and get a response with full parameter support
+- **stream**: Stream response tokens using SSE with all v2.0 features  
+- **health**: Check API health status and LLM availability
+- **presets**: List all available preset configurations
+- **models**: List available LLM models
+- **benchmark**: Run performance tests with preset/model options
+- **compare-presets**: Compare responses across all presets
 
 ## API Endpoints
 
@@ -184,6 +213,51 @@ Lists all available models from the LLM provider.
 #### GET /presets
 Lists all available preset configurations with their parameters.
 
+## Personal Resume Feature
+
+MiniVault API includes a smart resume context feature that automatically enhances responses to personal questions about the API creator.
+
+### How It Works
+
+1. **Personal Question Detection**: The API automatically detects when questions are about Saeed personally using keywords like "you", "your background", "Saeed", "Digikala", etc.
+
+2. **Smart Context Injection**: For personal questions, the API automatically adds resume content as context to provide informed responses.
+
+3. **Dual Mode Support**: Works with both LLM and fallback modes.
+
+### Configuration
+
+Create a `resume.txt` file in the project root or set environment variables:
+
+```bash
+# Option 1: Resume file (recommended)
+echo "Your resume content here..." > resume.txt
+
+# Option 2: Environment variable
+export LLM_RESUME_CONTENT="Your resume content here..."
+
+# Option 3: Custom file path
+export LLM_RESUME_FILE="/path/to/your/resume.txt"
+```
+
+### Example Usage
+
+```bash
+# These questions will get resume context:
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Tell me about your experience at Digikala"}'
+
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "What technologies do you work with?"}'
+
+# Regular questions work normally:
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Explain quantum computing"}'
+```
+
 ## Design Choices
 
 1. **FastAPI Framework**: Modern, fast, with automatic validation and documentation
@@ -194,6 +268,7 @@ Lists all available preset configurations with their parameters.
 6. **Queue-based Logging**: Ensures logging doesn't block request handling
 7. **Graceful Shutdown**: Properly handles SIGTERM/SIGINT signals
 8. **Code Quality**: Black formatting, pre-commit hooks, and linting integrated
+9. **Dynamic Model Selection**: Automatically picks from available models when none specified
 
 ## Testing
 
@@ -218,9 +293,12 @@ All settings can be configured via environment variables:
 # LLM Settings
 LLM_PROVIDER=ollama              # Options: ollama, stub
 LLM_BASE_URL=http://localhost:11434
-LLM_MODEL=llama3.1:8b           # Default model to use
+LLM_MODEL=llama3.1:8b           # Default model (or "auto" for random selection)
 LLM_TEMPERATURE=0.7             # Generation temperature
 LLM_MAX_TOKENS=1000             # Maximum tokens to generate
+LLM_RESUME_FILE=resume.txt       # Resume file for personal questions
+LLM_RESUME_CONTENT="..."         # Or direct resume content
+LLM_INCLUDE_THINKING=false       # Include model's thinking process in responses
 
 # API Settings  
 API_HOST=0.0.0.0
@@ -296,7 +374,7 @@ Curious about how this API was built through human-AI collaboration? Check out o
 
 ## Notes
 
-This API includes several easter eggs and thoughtful touches. Try sending "What model are you?" as a prompt! 🎉
+This API includes several easter eggs and thoughtful touches. Try sending "Who are you?" as a prompt! 🎉
 
 ---
 
