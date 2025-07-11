@@ -260,20 +260,48 @@ class LLMClient:
                         f"Generation failed: HTTP {response.status} - {error_text}"
                     )
 
+                # Buffer for accumulating response to handle think tags
+                buffer = ""
+                inside_think_tag = False
+                
                 async for line in response.content:
                     if line:
                         try:
                             data = json.loads(line.decode("utf-8"))
                             if "response" in data:
                                 raw_token = data["response"]
-                                cleaned_token = clean_response(
-                                    raw_token, self.config.include_thinking
-                                )
-                                if (
-                                    cleaned_token
-                                ):  # Only yield if there's content after cleaning
-                                    yield cleaned_token
+                                
+                                if not self.config.include_thinking:
+                                    # Add token to buffer
+                                    buffer += raw_token
+                                    
+                                    # Check if we're entering or inside a think tag
+                                    if "<think>" in buffer and "</think>" not in buffer:
+                                        inside_think_tag = True
+                                        continue
+                                    elif inside_think_tag and "</think>" not in buffer:
+                                        continue
+                                    elif "</think>" in buffer:
+                                        # Complete think tag found, clean and yield
+                                        cleaned = clean_response(buffer, False)
+                                        buffer = ""
+                                        inside_think_tag = False
+                                        if cleaned:
+                                            yield cleaned
+                                    else:
+                                        # No think tags, yield the token
+                                        yield raw_token
+                                        buffer = ""
+                                else:
+                                    # Include thinking, yield as-is
+                                    yield raw_token
+                                    
                             if data.get("done", False):
+                                # Yield any remaining buffer content
+                                if buffer and not self.config.include_thinking:
+                                    cleaned = clean_response(buffer, False)
+                                    if cleaned:
+                                        yield cleaned
                                 break
                         except json.JSONDecodeError:
                             logger.warning(f"Failed to parse JSON line: {line}")

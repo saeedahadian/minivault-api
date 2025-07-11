@@ -62,12 +62,18 @@ pytest tests/ --cov=. --cov-report=html  # With coverage
 ```bash
 chmod +x cli.py
 ./cli.py generate -p "Your prompt" --preset creative    # Generate with preset
-./cli.py stream -p "Tell me a story" --system "You are helpful"  # Stream with system prompt
+./cli.py stream -p "Tell me a story" --system "You are helpful"  # Stream with system prompt (fixed formatting)
 ./cli.py health                       # Check health and LLM status
 ./cli.py presets                      # List available presets
 ./cli.py models                       # List available models
 ./cli.py benchmark -c 100 --preset balanced  # Benchmark with preset
 ./cli.py compare-presets -p "Explain AI"     # Compare all presets
+
+# CLI streaming improvements (v2.2.1):
+# - Enhanced error handling with HTTP status validation
+# - Proper timeout configuration (30s connection, 60s read)
+# - Fixed response formatting (no extra blank lines)
+# - Better error categorization (HTTP, timeout, connection errors)
 ```
 
 ### Code Quality

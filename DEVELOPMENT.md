@@ -309,6 +309,26 @@ Throughout this project, the human partner provided critical insights:
 
 These contributions shaped a more professional, standards-compliant API that balances functionality with simplicity while remaining accessible to users of all technical levels.
 
+### CLI Streaming Enhancements (v2.2.1)
+
+Additional improvements were made to the CLI tool based on user feedback:
+
+**Human Observation**: "When I run CLI with stream, I sometimes get an Error while the log shows that LLM worked fine and I did have a response."
+
+**Issues Identified**:
+1. **No HTTP status validation** - CLI attempted to parse SSE data from error responses
+2. **Missing timeout configuration** - Streaming requests could hang indefinitely
+3. **Poor error categorization** - All errors were grouped together without specificity
+4. **Response formatting issue** - Extra blank line after "Response:" due to LLM sending `"\n\n"` as first token
+
+**Technical Solutions Implemented**:
+- Added HTTP status check before processing SSE data
+- Configured proper timeouts (30s connection, 60s read)
+- Implemented specific error handling for HTTP, timeout, and connection errors
+- Added logic to strip leading whitespace from first token for clean formatting
+
+**Result**: CLI streaming now provides reliable error handling with clear error messages and professional response formatting.
+
 ### Future Enhancements Considered
 
 - ~~Integration with local LLMs (Ollama/Hugging Face)~~ ✓ Implemented in v1.1.0
@@ -321,6 +341,7 @@ These contributions shaped a more professional, standards-compliant API that bal
 - ~~Personal branding features~~ ✓ Implemented post v2.0.1
 - ~~Smart context injection~~ ✓ Implemented post v2.0.1
 - ~~Response cleaning/filtering~~ ✓ Implemented post v2.0.1
+- ~~CLI streaming reliability~~ ✓ Implemented in v2.2.1
 - Metrics export (Prometheus format)
 - Request ID tracking for debugging
 - OpenAI API compatibility mode

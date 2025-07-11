@@ -114,7 +114,7 @@ curl http://localhost:8000/presets
 
 ## CLI Tool
 
-The included CLI tool makes testing easier with full v2.0 feature support:
+The included CLI tool makes testing easier with full v2.0+ feature support and enhanced reliability:
 
 ```bash
 # Make it executable
@@ -126,7 +126,7 @@ chmod +x cli.py
 # Generate with specific model and parameters
 ./cli.py generate -p "Write code" --preset code --temperature 0.1
 
-# Stream response with system prompt
+# Stream response with system prompt (enhanced error handling in v2.2.1)
 ./cli.py stream -p "Tell me about AI" --system "You are an expert"
 
 # List available presets
@@ -148,7 +148,7 @@ chmod +x cli.py
 ### CLI Commands
 
 - **generate**: Send a prompt and get a response with full parameter support
-- **stream**: Stream response tokens using SSE with all v2.0 features  
+- **stream**: Stream response tokens using SSE with enhanced error handling and clean formatting
 - **health**: Check API health status and LLM availability
 - **presets**: List all available preset configurations
 - **models**: List available LLM models
@@ -334,7 +334,19 @@ minivault-api/
 
 ## Version History
 
-### v2.0.1 (Current)
+### v2.2.1 (Current)
+- ✅ Enhanced CLI streaming reliability with proper error handling
+- ✅ Fixed CLI response formatting (removed extra blank lines)
+- ✅ Improved timeout configuration and HTTP status validation
+- ✅ Better error categorization for debugging
+
+### v2.2.0
+- ✅ Dynamic model selection (automatic random model choice)
+- ✅ Personal easter egg enhancement and smart resume context
+- ✅ Think tag filtering for clean LLM responses
+- ✅ CLI tool modernization with v2.0+ feature support
+
+### v2.0.1
 - ✅ Enhanced logging with comprehensive request analytics
 - ✅ Optimized streaming API (removed unnecessary null fields)
 - ✅ Improved bandwidth efficiency

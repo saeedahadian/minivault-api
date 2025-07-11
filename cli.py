@@ -99,7 +99,9 @@ def stream(
     """Stream response tokens using SSE."""
 
     async def stream_tokens():
-        async with httpx.AsyncClient() as client:
+        # Set timeout for streaming requests
+        timeout = httpx.Timeout(30.0, read=60.0)  # 30s connection, 60s read
+        async with httpx.AsyncClient(timeout=timeout) as client:
             try:
                 console.print(f"\n[bold cyan]Prompt:[/bold cyan] {prompt}")
                 console.print("[bold green]Response:[/bold green] ", end="")
@@ -120,9 +122,20 @@ def stream(
                     payload["system"] = system
 
                 usage_info = None
+                first_token = True
                 async with client.stream(
                     "POST", f"{url}/generate", json=payload
                 ) as response:
+                    # Check HTTP status before processing
+                    if response.status_code != 200:
+                        error_text = await response.aread()
+                        raise httpx.HTTPStatusError(
+                            f"HTTP {response.status_code}", 
+                            request=response.request, 
+                            response=response
+                        )
+                    
+                    # Process streaming response
                     async for line in response.aiter_lines():
                         if line.startswith("data: "):
                             data_str = line[6:]  # Remove "data: " prefix
@@ -130,17 +143,31 @@ def stream(
                                 break
                             try:
                                 token_data = json.loads(data_str)
-                                console.print(token_data["token"], end="")
+                                token = token_data["token"]
+                                
+                                # Strip leading whitespace from first token to avoid blank line
+                                if first_token:
+                                    token = token.lstrip()
+                                    first_token = False
+                                
+                                console.print(token, end="")
                                 if token_data.get("usage"):
                                     usage_info = token_data["usage"]
                             except json.JSONDecodeError:
-                                pass
+                                # Skip malformed JSON lines
+                                continue
 
                 console.print("\n")
                 if usage_info:
                     console.print(
                         f"[dim]Usage: {usage_info['prompt_tokens']} prompt + {usage_info['completion_tokens']} completion = {usage_info['total_tokens']} total tokens[/dim]"
                     )
+            except httpx.HTTPStatusError as e:
+                console.print(f"\n[bold red]HTTP Error:[/bold red] {e}")
+            except httpx.TimeoutException:
+                console.print(f"\n[bold red]Timeout Error:[/bold red] Request timed out")
+            except httpx.RequestError as e:
+                console.print(f"\n[bold red]Connection Error:[/bold red] {e}")
             except Exception as e:
                 console.print(f"\n[bold red]Error:[/bold red] {e}")
 
@@ -235,11 +262,11 @@ def models(url: str):
         for model in data["models"]:
             size = model.get("size", "Unknown")
             modified = model.get("modified", "Unknown")
-            if modified != "Unknown":
+            if modified != "Unknown" and modified is not None:
                 # Format datetime if available
                 modified = modified.split("T")[0]  # Just show date
 
-            table.add_row(model["name"], size, modified)
+            table.add_row(model["name"], str(size), str(modified))
 
         console.print(table)
     except Exception as e:
