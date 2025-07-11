@@ -103,12 +103,104 @@ Comprehensive test coverage with pytest:
 
 This streamlines development workflow and ensures consistent environments across developers.
 
+### Version 1.1.0: Local LLM Integration
+
+Through continued collaboration, we implemented real AI capabilities:
+
+**Human Insight: LLM Education Request**
+- Recognized the need to understand local LLM landscape before implementation
+- Asked for comprehensive education on options (Ollama, LLaMA.cpp, etc.)
+- Emphasized understanding trade-offs between different approaches
+
+**AI Response: Comprehensive LLM Overview**
+- Provided detailed comparison of local LLM options
+- Explained hardware requirements and model recommendations
+- Outlined three integration architectures with pros/cons
+
+**Human Insight: API Design Clarity**
+- Questioned the need for both per-request model selection AND a model switch endpoint
+- Identified confusion potential: "Why two ways to do the same thing?"
+- Advocated for simplicity: one obvious way to select models
+
+**Collaborative Solution**
+- Removed the `/models/{name}/switch` endpoint
+- Kept per-request model selection as the single approach
+- Simplified the API surface while maintaining flexibility
+
+### Technical Implementation Details
+
+**LLM Client Architecture**:
+- Async HTTP client for Ollama integration
+- Graceful fallback to stub responses when LLM unavailable
+- True streaming support (not simulated)
+- Comprehensive error handling with `LLMError` class
+
+**Configuration Management**:
+- Environment-based configuration with sensible defaults
+- Support for multiple LLM providers (ollama, openai, stub)
+- All parameters configurable without code changes
+
+**Key Design Decisions**:
+1. **Separation of Concerns**: LLM client isolated from main app logic
+2. **Fallback Strategy**: API remains functional even without LLM
+3. **Stream Unification**: Both LLM and fallback use same streaming interface
+4. **Type Safety**: Full type hints for all new components
+
+### Version 1.2.0: User-Friendly Presets
+
+Another round of human-AI collaboration led to a major usability improvement:
+
+**Human Insight: User Experience Focus**
+- Shared feedback from an experienced developer about API complexity
+- Recognized that technical parameters (temperature, top_p) are confusing for end users
+- Identified the core problem: "My API is going to be used by the masses! They don't know about these underlying differences"
+
+**Human Insight: Solution Direction**
+- Proposed using "preset" or "mode" parameters with sensible defaults
+- Understanding that users want outcomes (creative, precise) not technical knobs
+- Emphasized the need for beginner-friendly API while maintaining power user features
+
+**Collaborative Design Process**
+- AI provided comprehensive analysis of both "preset" vs "mode" naming
+- Defined five preset categories based on common LLM use cases
+- Human validated the preset names and use cases matched real-world needs
+- Implemented preset discovery endpoint for API discoverability
+
+**Technical Implementation**
+- Presets provide sensible defaults, explicit parameters override them
+- Maintains backward compatibility with existing parameter-based requests
+- Added `/presets` endpoint for runtime discovery of available configurations
+
+### Technical Implementation Details
+
+**Preset System Architecture**:
+- Enum-based preset types for type safety
+- Configuration stored in `config.py` for easy maintenance
+- Override logic: preset provides defaults, explicit params win
+- Discovery endpoint for API discoverability
+
+### Human Contributions Highlight
+
+Throughout this project, the human partner provided critical insights:
+- **Standards Knowledge**: SSE vs NDJSON, REST principles
+- **API Design Philosophy**: Simplicity and single responsibility
+- **Domain Expertise**: Token counting, processing vs response time
+- **User Experience**: Identifying confusion points in API design
+- **Accessibility Focus**: Making technical APIs approachable for non-experts
+- **Quality Focus**: Insistence on updated documentation
+
+These contributions shaped a more professional, standards-compliant API that balances functionality with simplicity while remaining accessible to users of all technical levels.
+
 ### Future Enhancements Considered
 
-- Integration with local LLMs (Ollama/Hugging Face)
+- ~~Integration with local LLMs (Ollama/Hugging Face)~~ ✓ Implemented in v1.1.0
+- ~~Configuration management via environment variables~~ ✓ Implemented in v1.1.0
+- ~~User-friendly preset system~~ ✓ Implemented in v1.2.0
 - Metrics export (Prometheus format)
 - Request ID tracking for debugging
-- Configuration management via environment variables
+- OpenAI API compatibility mode
+- Model performance benchmarking
+- Custom preset creation via API
 
 ---
 

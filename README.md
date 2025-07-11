@@ -1,16 +1,19 @@
 # MiniVault API
 
-A lightweight, local REST API that simulates prompt/response generation with thoughtful engineering and clean design.
+A lightweight, local REST API with real AI capabilities through Ollama integration, featuring thoughtful engineering and clean design.
 
 ## Features
 
 - ✅ RESTful API with `POST /generate` endpoint
+- 🤖 Local LLM integration via Ollama (with fallback mode)
+- 🎨 User-friendly presets (creative, balanced, precise, code)
 - 📝 Automatic JSONL logging with nanosecond precision
-- 🚀 Token-by-token streaming support
+- 🚀 Real token-by-token streaming from LLM
 - 🛡️ Built-in rate limiting
-- 📊 Hidden health metrics endpoint
+- 📊 Hidden endpoints for health, models, and presets
 - 🎯 CLI testing tool with benchmarking
-- 🤖 AI-assisted development practices
+- ⚙️ Full configuration via environment variables
+- 🔄 Per-request model selection with preset support
 
 ## Quick Start
 
@@ -35,11 +38,31 @@ pip install -r requirements.txt
 pre-commit install
 ```
 
+### Setting up Local LLM (Optional)
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull a model (choose based on your hardware)
+ollama pull llama3.1:8b    # 8GB RAM recommended
+ollama pull mistral:7b     # Alternative option
+
+# Ollama will auto-start, or run manually:
+ollama serve
+```
+
 ### Running the API
 
 ```bash
-# Start the server
+# Start with Ollama (default)
 python app.py
+
+# Start with stub responses (no LLM required)
+LLM_PROVIDER=stub python app.py
+
+# Use a specific model
+LLM_MODEL=mistral:7b python app.py
 
 # Or with auto-reload for development
 uvicorn app:app --reload
@@ -49,12 +72,23 @@ The API will be available at `http://localhost:8000`
 
 ### Basic Usage
 
-#### Generate Response
+#### Generate Response with Presets
 
 ```bash
+# Creative writing
 curl -X POST http://localhost:8000/generate \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Hello, MiniVault!"}'
+  -d '{"prompt": "Write a story about a robot", "preset": "creative"}'
+
+# Precise factual response
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Explain photosynthesis", "preset": "precise"}'
+
+# Code generation
+curl -X POST http://localhost:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Write a Python function to sort a list", "preset": "code"}'
 ```
 
 #### Stream Response (SSE)
@@ -62,7 +96,13 @@ curl -X POST http://localhost:8000/generate \
 ```bash
 curl -X POST http://localhost:8000/generate \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Tell me a story", "stream": true}'
+  -d '{"prompt": "Tell me a story", "stream": true, "preset": "creative"}'
+```
+
+#### List Available Presets
+
+```bash
+curl http://localhost:8000/presets
 ```
 
 ## CLI Tool
@@ -95,9 +135,22 @@ Generate a response for a given prompt. Supports both regular and streaming resp
 ```json
 {
   "prompt": "Your prompt text",
-  "stream": false  // Optional: set to true for SSE streaming
+  "stream": false,              // Optional: set to true for SSE streaming
+  "preset": "balanced",         // Optional: creative, balanced, precise, deterministic, code
+  "model": "llama3.1:8b",       // Optional: override default model
+  "temperature": 0.7,           // Optional: 0.0-2.0 (overrides preset)
+  "top_p": 0.9,                // Optional: 0.0-1.0 (overrides preset)
+  "max_tokens": 1000,          // Optional: 1-4000 (overrides preset)
+  "system": "You are helpful"  // Optional: system prompt
 }
 ```
+
+**Available Presets:**
+- **creative**: High temperature (0.9) for imaginative content
+- **balanced**: Default, good for general use (0.7 temperature)
+- **precise**: Lower temperature (0.3) for factual content  
+- **deterministic**: Very low temperature (0.1) for consistent outputs
+- **code**: Optimized for code generation (0.2 temperature)
 
 **Response (Regular):**
 ```json
@@ -120,8 +173,16 @@ data: {"token": " world", "index": 1, "usage": {...}}
 data: [DONE]
 ```
 
-### GET /health (Hidden)
-Returns system health metrics including uptime, request count, and average response time.
+### Hidden Endpoints
+
+#### GET /health
+Returns system health metrics including uptime, request count, and LLM status.
+
+#### GET /models  
+Lists all available models from the LLM provider.
+
+#### GET /presets
+Lists all available preset configurations with their parameters.
 
 ## Design Choices
 
@@ -149,6 +210,24 @@ pytest tests/test_api.py -v
 pytest tests/ --cov=. --cov-report=html
 ```
 
+## Configuration
+
+All settings can be configured via environment variables:
+
+```bash
+# LLM Settings
+LLM_PROVIDER=ollama              # Options: ollama, stub
+LLM_BASE_URL=http://localhost:11434
+LLM_MODEL=llama3.1:8b           # Default model to use
+LLM_TEMPERATURE=0.7             # Generation temperature
+LLM_MAX_TOKENS=1000             # Maximum tokens to generate
+
+# API Settings  
+API_HOST=0.0.0.0
+API_PORT=8000
+API_RATE_LIMIT=10               # Requests per minute
+```
+
 ## Project Structure
 
 ```
@@ -156,8 +235,11 @@ minivault-api/
 ├── app.py              # Main FastAPI application
 ├── models.py           # Pydantic models with full type hints
 ├── logger.py           # Async JSONL logger implementation
+├── llm_client.py       # Ollama integration client
+├── config.py           # Configuration management
 ├── cli.py              # Rich CLI tool for testing
 ├── requirements.txt    # Python dependencies
+├── pyproject.toml      # Python project configuration
 ├── .envrc              # direnv configuration for auto-environment setup
 ├── .pre-commit-config.yaml # Code quality automation
 ├── tests/              # Comprehensive test suite
@@ -167,17 +249,41 @@ minivault-api/
 │   └── test_logger.py  # Logger tests
 ├── logs/              # Directory for JSONL logs
 │   └── log.jsonl      # Append-only log file
+├── CLAUDE.md          # AI assistant context and guidelines
 ├── DEVELOPMENT.md     # Development insights and AI collaboration notes
 └── README.md          # This file
 ```
 
+## Version History
+
+### v2.0.0 (Current) 
+- ✅ User-friendly presets for common use cases
+- ✅ Preset discovery endpoint  
+- ✅ Preset override capability
+- ✅ Major API enhancement: full LLM integration
+- ⚠️  **Breaking**: New dependencies (aiohttp), new request schema
+
+### v1.1.0
+- ✅ Full Ollama integration for local LLM support
+- ✅ Graceful fallback when LLM unavailable  
+- ✅ Per-request model selection
+- ✅ Advanced generation parameters
+- ✅ Environment-based configuration
+- ✅ Real token counting from LLM
+
+### v1.0.0
+- Initial release with stub responses
+- SSE streaming support
+- Rate limiting and logging
+- Hidden health endpoint
+
 ## Future Improvements
 
-- Integration with local LLMs (Ollama, Hugging Face)
+- OpenAI API compatibility mode
 - Prometheus metrics export
 - Request ID tracking for better debugging
-- Configuration via environment variables
-- More sophisticated token counting (using actual tokenizers)
+- Model performance benchmarking
+- Support for more LLM providers (LLaMA.cpp, Hugging Face)
 
 ## Notes
 
