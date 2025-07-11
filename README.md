@@ -1,5 +1,7 @@
 # MiniVault API
 
+![MiniVault API Header](header.png)
+
 A lightweight, local REST API with real AI capabilities through Ollama integration, featuring thoughtful engineering and clean design.
 
 ## Features
